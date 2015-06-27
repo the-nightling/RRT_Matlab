@@ -113,14 +113,14 @@ function RRT_2d()
 
 		% plot new RRT branch
 		plot([newNode.xCoord nearestNode.xCoord],[newNode.yCoord nearestNode.yCoord]);
-		
+		drawnow;
 		% if goal reached, end iterations
 		if(getDistanceBetween(newNode, goalNode) <= goalRadius)
 			goalFound = 1;
 			break;
 		end
 		
-	    pause(delay);   
+	    %pause(delay);   
 	end
 	
 	% if the goal was reached,
