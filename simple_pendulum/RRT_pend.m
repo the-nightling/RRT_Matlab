@@ -8,20 +8,27 @@ function u_path = RRT_pend
 % to reach the goal state.
 
 	% pendulum parameters
-	global m g l I b;
+	global m g l I b dt
 	m = 1;		% mass
 	g = 9.8;	% acceleration due to gravity
-	l = 1;		% length of pendulum link
+	l = 0.5;	% length of pendulum link
 	I = m*l*l;	% rotational inertia
-	b = 0.1;		% damping factor
+	b = 0.1;	% damping factor
+	theta_0 = -pi/2;
+	
+	assignin('base', 'm', m);	% save variables into workspace
+	assignin('base', 'g', g);
+	assignin('base', 'l', l);
+	assignin('base', 'b', b);
+	assignin('base', 'theta_0', theta_0);
 	
 	x0 = [-pi/2; 0];	% initial state; angle position measured from x-axis
 	xG = [pi/2; 0];		% goal state
-	goalRadiusSq = 0.1;	% distance from gaol that is an acceptable solution
+	goalRadiusSq = 0.05;	% distance from goal that is an acceptable solution
 	goalBias = 0.99;
-	xlimits = [-pi,pi; -10,10];	% state limits
+	xlimits = [-pi,pi; -5,5];	% state limits
 	U = linspace(-5,5,20);		% range of control torques that can be used
-	dt = 0.05;			% time interval between application of subsequent control torques
+	dt = 0.005;			% time interval between application of subsequent control torques
 	
 	u_path = 0;	% default control actions
 	x_path = 0;	% default state trajectory
