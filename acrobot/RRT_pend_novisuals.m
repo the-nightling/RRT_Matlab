@@ -1,4 +1,4 @@
-function u_path = RRT_pend
+function u_path = RRT_pend_novisuals
 %#codegen
 % Computes the sequence of control actions needed for the swing up of
 % a simple pendulum using a Rapidly Exploring Random Tree.
@@ -27,7 +27,7 @@ function u_path = RRT_pend
 	xlimits = [-pi,pi; -10,10];	% state limits
 	U = linspace(-5,5,20);		% range of control torques that can be used
 	global dt;
-	dt = 0.01;			% time interval between application of subsequent control torques
+	dt = 0.1;			% time interval between application of subsequent control torques
 	assignin('base', 'dt', dt);
 	
 	u_path = 0;	% default control actions
@@ -42,19 +42,7 @@ function u_path = RRT_pend
 	xbi = ones(1,1000);
 	xn_c = repmat([1;1],1,length(U));
 
-	% setup plot
-	figure(1);
-	hold off;
-	plot(x0(1),x0(2),'b.','MarkerSize',30);	% initial state in blue
-	hold on;
-	plot(xG(1),xG(2),'r.','MarkerSize',30);	% goal state in red
-	grid on;
-
-	axis([xlimits(1,:),xlimits(2,:)]);
-	xlabel('Angular position [rad]');
-	ylabel('Angular velocity [rad/s]');
 	
-	set(gca,'XTick',-pi:pi/4:pi,'XTickLabel',{'-pi','-3pi/4','-pi/2','-pi/4','0','pi/4','pi/2','3pi/4','pi'});
 	
 	% keep growing RRT util goal found or run out of iterations
 	for n = 2:N
@@ -83,49 +71,29 @@ function u_path = RRT_pend
 		% if angular position is greater than pi rads, wrap around
 		temp = xn(1);
 		xn(1) = mod(xn(1)+pi,2*pi)-pi;
-		
-		% plot new RRT branch
-		if(abs(xn(1)-temp) < pi)
-			line([G(1,i),xn(1)],[G(2,i),xn(2)],'Color','b');
-		end
-		
+				
 		% link reachable state point to the nearest vertex in the tree
 		G(:,n) = xn;
 		P(1,n) = i;
 		Ui(1,n) = ui;
 
-		% for higher values of n, only update plot every 250 iteration (speeds up animation)
-		if(n<100 || mod(n,250)==1)
-			drawnow;
-		end
 
 		% if the goal was reached,
 		% retrace steps from goal state to initial state
 		% path displayed using red line
 		if(sum((xG-xn).^2,1) < goalRadiusSq)
-			title('Simulation complete (goal found)');
 			xbi = n;
 			
 			% retrace control actions and solution trajectory
 			u_path = [];
 			while(xbi(1) ~= 1)
 				xx = [G(1,xbi(1)),G(1,P(xbi(1)))];
-				if abs(xx(2)-xx(1))<pi
-					line([G(1,xbi(1)),G(1,P(xbi(1)))],[G(2,xbi(1)),G(2,P(xbi(1)))],'Color','r','LineWidth',2);
-				end
 				
 				u_path = [U(Ui(xbi(1))),u_path];
 				xbi = [P(xbi(1)),xbi];
 			end
 			
-			drawnow;
-			
 			break;
-		end
-		
-
-		if(n == N)
-			title('Simulation complete (goal not found; ran out of iterations)');
 		end
 	end
 end

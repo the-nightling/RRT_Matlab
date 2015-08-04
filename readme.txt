@@ -8,7 +8,7 @@ The RRT_profiler.m matlab script shows the bottlenecks in the algorithm and gene
 The pend_sim_euler.slx is a simulink simulation of the simple pendulum.
 To use the simulink simulation, run RRT_profiler OR the following first:
 	>> tau = RRT_pend;
-	>> control = [[0:0.01:0.01*length(tau)-0.01]',tau'];
+	>> control = [[0:dt:dt*length(tau)-dt]',tau'];
 
 To-do:
 - get basic RRT implementation for acrobot working

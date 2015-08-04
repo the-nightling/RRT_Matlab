@@ -1,9 +1,5 @@
 function [theta1_dd, theta2_dd] = AcrobotDynamics(theta1, theta1_d, theta2, theta2_d, tau)
 
-    syms q qd qdd;
-    syms m1 I1 l1 lc1 b1;
-    syms m2 I2 l2 lc2 b2;
-
     m1 = 1;
     m2 = 1;
     l1 = 1;
