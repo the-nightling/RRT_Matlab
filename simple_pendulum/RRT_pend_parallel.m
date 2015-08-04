@@ -1,5 +1,5 @@
 function u_path = RRT_pend
-%#codegen
+%
 % Computes the sequence of control actions needed for the swing up of
 % a simple pendulum using a Rapidly Exploring Random Tree.
 % The tree will grow from the initial state and span the phase space area,
@@ -8,9 +8,11 @@ function u_path = RRT_pend
 % to reach the goal state.
 
 	% pendulum parameters
+	global m g l I b dt
 	m = 1;		% mass
 	g = 9.8;	% acceleration due to gravity
 	l = 1;	% length of pendulum link
+	I = m*l*l;	% rotational inertia
 	b = 0.1;	% damping factor
 	theta_0 = -pi/2;
 	
@@ -22,15 +24,15 @@ function u_path = RRT_pend
 	
 	x0 = [-pi/2; 0];	% initial state; angle position measured from x-axis
 	xG = [pi/2; 0];		% goal state
-	goalRadiusSq = 0.02;	% distance from goal that is an acceptable solution
+	goalRadiusSq = 0.05;	% distance from goal that is an acceptable solution
 	goalBias = 0.99;
 	xlimits = [-pi,pi; -10,10];	% state limits
 	U = linspace(-5,5,20);		% range of control torques that can be used
-	global dt;
 	dt = 0.1;			% time interval between application of subsequent control torques
 	assignin('base', 'dt', dt);
 	
 	u_path = 0;	% default control actions
+	x_path = 0;	% default state trajectory
 	
 	N = 20000;	% maximum number of iterations
 
@@ -38,9 +40,6 @@ function u_path = RRT_pend
 	G = repmat(x0,1,N);		% graph of states in RRT
 	P = ones(1,N);			% parent states
 	Ui = ones(1,N);			% control actions
-	u_path = ones(1,1000);
-	xbi = ones(1,1000);
-	xn_c = repmat([1;1],1,length(U));
 
 	% setup plot
 	figure(1);
@@ -64,10 +63,10 @@ function u_path = RRT_pend
 		xn = ~bUseGoal.*rand(2,1).*(xlimits(:,2)-xlimits(:,1)) + xlimits(:,1);
 		
 		% find distances between that state point and every vertex in RRT
-		dsq = euclidianDistSquare(xn,G(:,1:n));
+		dsq = euclidianDistSquare(xn,G);
 		
 		% select RRT vertex closest to the state point
-		[~,i] = min(dsq);
+		[y,i] = min(dsq);
 		
 		% from the closest RRT vertex, compute all the states that can be reached,
 		% given the pendulum dynamics and available torques
@@ -77,7 +76,7 @@ function u_path = RRT_pend
 		
 		% select the closest reachable state point
 		dsq = euclidianDistSquare(xn,xn_c);
-		[~,ui] = min(dsq);
+		[y,ui] = min(dsq);
 		xn = xn_c(:,ui);
 		
 		% if angular position is greater than pi rads, wrap around
@@ -94,7 +93,7 @@ function u_path = RRT_pend
 		P(1,n) = i;
 		Ui(1,n) = ui;
 
-		% for higher values of n, only update plot every 250 iteration (speeds up animation)
+		% for higer values of n, only update plot every 250 iteration (speeds up animation)
 		if(n<100 || mod(n,250)==1)
 			drawnow;
 		end
@@ -102,7 +101,7 @@ function u_path = RRT_pend
 		% if the goal was reached,
 		% retrace steps from goal state to initial state
 		% path displayed using red line
-		if(sum((xG-xn).^2,1) < goalRadiusSq)
+		if(euclidianDistSquare(xG,xn) < goalRadiusSq)
 			title('Simulation complete (goal found)');
 			xbi = n;
 			
@@ -118,16 +117,18 @@ function u_path = RRT_pend
 				xbi = [P(xbi(1)),xbi];
 			end
 			
-			length(u_path)
-			length(xbi)
-			
 			drawnow;
+			
+			x_path = [];
+			for ti = 1:length(xbi);
+				x_path = [x_path,G(:,xbi(ti))];
+			end
 			
 			break;
 		end
 		
-
-		if(n == N)
+		n = n+1;
+		if(n == N+1)
 			title('Simulation complete (goal not found; ran out of iterations)');
 		end
 	end
@@ -141,12 +142,7 @@ end
 
 function xdot = dynamics(x,u)
 	% pendulum parameters
-	m = 1;		% mass
-	g = 9.8;	% acceleration due to gravity
-	l = 1;		% length of pendulum link
-	I = m*l*l;	% rotational inertia
-	b = 0.1;	% damping factor
-	
+	global m g l I b;
 	% pendulum state space equation
 	xdot = [x(2,:); (u-m*g*l*sin((pi/2)-x(1,:))-b*x(2,:))./I];
 end
