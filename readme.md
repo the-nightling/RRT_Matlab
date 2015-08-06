@@ -3,7 +3,7 @@
 Run addpath_RRT.m to add repository to Matlab path.
 
 ### Basic RRT
-Basic RRT implementaions in 2D and 3D.
+Basic RRT implementations in 2D and 3D.
 
 ### Simple Pendulum
 Uses RRT for swing-up of a simple pendulum.
@@ -21,6 +21,8 @@ To run the simulation:
         
         >> control = RRT_acrobot
         Run 'acrobot_sim_v3.slx' in Simulink
+
+Not sure if PFL implementation is working properly.
 
 ### To-do
 - ~~get basic RRT implementation for acrobot working~~
