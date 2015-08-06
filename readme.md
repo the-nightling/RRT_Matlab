@@ -28,4 +28,4 @@ To run the simulation:
 
 
 ## Idea
-- paralellize using multi-RRT (test with dual-RRT first)
+- parallelize using multi-RRT (test with dual-RRT first)
