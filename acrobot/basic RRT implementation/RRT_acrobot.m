@@ -111,7 +111,7 @@ function control = RRT_acrobot
 
 		% if the goal was reached,
 		% retrace steps from goal state to initial state
-		if((xn(1)>3.0) || (xn(1)<-3.0))     % range of acceptable theta1 in radians
+		if((xn(1)>3) || (xn(1)<-3))     % range of acceptable theta1 in radians
 	        if((xn(3)>-0.1) && (xn(3)<0.1)) % range of acceptable theta2 in radians
 	        
 		        xbi = n;

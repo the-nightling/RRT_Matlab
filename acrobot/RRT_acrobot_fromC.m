@@ -1,0 +1,19 @@
+m1 = 1;
+m2 = 1;
+l1 = 1;
+l2 = 1;
+lc1 = l1/2;
+lc2 = l2/2;
+Ic1 = (lc1*lc1)/3;
+Ic2 = (lc2*lc2)/3;
+I1 = Ic1+m1*lc1*lc1;
+I2 = Ic2+m2*lc2*lc2;
+b1 = 0.4;
+b2 = 0.4;
+g = 9.8;
+theta1_0 = 0;
+theta2_0 = 0;
+dt = 0.04;
+
+M = importdata('build-RRT_acrobot_C-Desktop_Qt_5_3_GCC_64bit-Debug/data.txt');
+control = [[0:dt:dt*length(M)-dt]',M];
