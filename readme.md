@@ -21,18 +21,22 @@ To use the simulink simulation, run either of the following first:
 
 ### Acrobot
 Uses RRT for swing-up of an acrobot.
-To run the simulation:
+The RRT_acrobot.m matlab script outputs the control torques required, without showing a plot.
+The RRT_acrobot_fromC.m matlab script saves the control torques from 'build-RRT_acrobot_C-Desktop_Qt_5_3_GCC_64bit-Debug/data.txt' into the matlab workspace. The data.txt file is generated from the C version of the RRT algorithm (source in 'RRT_acrobot_c').
+The acrobot_sim_v3.slx is a simulink simulation of the acrobot.
+To use the simulink simulation, run either of the following first:
         
         >> control = RRT_acrobot
-        Run 'acrobot_sim_v3.slx' in Simulink
+                OR
+        >> RRT_acrobot_fromC;      (after running the C code)
 
 Not sure if PFL implementation is working properly (probably needs task space PFL).
 
 ### To-do
 - ~~get basic RRT implementation for acrobot working~~
-- partial feedback linearization
-- implement in C (manually) -> done for simple pendulum
+- ~~implement in C (manually)~~
 - test in CUDA
+- partial feedback linearization (need to work on task space PFL)
 
 
 ### Idea
